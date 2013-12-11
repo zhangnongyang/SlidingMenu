@@ -12,6 +12,8 @@ Usage
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" >
 
+	</com.charon.slidingmenu.view.SlidingMenu>
+	
   2. In your `onCreate` method (or `onCreateView` for a fragment), bind the
      widget to the `SlidingMenu`.
 
