@@ -5,15 +5,15 @@ SlidingMenu with left and right menu,This is an original component demo, does no
 
 Usage
 =====
-  1. Include the SlidingMenu widget in your view. 
-
+  1. Include the SlidingMenu widget in your view.        
+```xml
 	<com.charon.slidingmenu.view.SlidingMenu xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/sm"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" >
 
 	</com.charon.slidingmenu.view.SlidingMenu>
-	
+```	             
   2. In your `onCreate` method (or `onCreateView` for a fragment), bind the
      widget to the `SlidingMenu`.
 
