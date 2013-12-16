@@ -1,4 +1,4 @@
-package com.charon.slidingmenu.fragment;
+package com.charon.slidingmenudemo.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

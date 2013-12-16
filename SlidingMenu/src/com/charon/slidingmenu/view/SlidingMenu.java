@@ -16,9 +16,8 @@
 
 package com.charon.slidingmenu.view;
 
-import com.charon.slidingmenu.util.DenstyUtil;
-
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -47,18 +46,18 @@ public class SlidingMenu extends RelativeLayout {
 	/**
 	 * If the left view can be showing after scrolling to right.
 	 */
-	private boolean isLeftViewCanShow = true;
+	private boolean mCanLeftViewShow = true;
 
 	/**
 	 * If the right view can be showing after scrolling to left.
 	 */
-	private boolean isRightViewCanShow = false;
+	private boolean mCanRightViewShow = false;
 
 	/**
 	 * The state before we click the view to show the left or right view.
 	 */
-	private boolean isLeftViewCanShowBeforeToogle = true;
-	private boolean isRightViewCanShowBeforeToogle = false;
+	private boolean mCanLeftViewShowBeforeToogle = true;
+	private boolean mCanRightViewShowBeforeToogle = false;
 
 	private int mLeftViewWidth;
 	private int mRightViewWidth;
@@ -75,21 +74,21 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	private int minVelocity;
 
-	private int mDuration = 500;
+	private static final int sDuration = 500;
 
 	/**
 	 * Record whether have clicked the toogle, so will recover the
 	 * setWhickSideCanSlide state when click two times.
 	 */
-	private boolean isLeftViewToogleClick;
-	private boolean isRightViewToogleClick;
+	private boolean mLeftViewToogleClicked;
+	private boolean mRightViewToogleClicked;
 
 	/**
 	 * Record we click the visible part of the middle view when the left view or
 	 * right view is showing, to make middle view show fully when we click the
 	 * middle view's visible part.
 	 */
-	private boolean isClick;
+	private boolean mClicked;
 
 	public SlidingMenu(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -112,13 +111,9 @@ public class SlidingMenu extends RelativeLayout {
 		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 		minVelocity = ViewConfiguration.get(context)
 				.getScaledMinimumFlingVelocity();
-		WindowManager manager = (WindowManager) context
-				.getSystemService(Context.WINDOW_SERVICE);
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		manager.getDefaultDisplay().getMetrics(displayMetrics);
-		mWindowWidth = displayMetrics.widthPixels;
+		mWindowWidth = getWindowWidth(context);
 	}
-
+	
 	/**
 	 * Set the three view of the SlidingMenu and the width of the left view and
 	 * right view.
@@ -134,13 +129,13 @@ public class SlidingMenu extends RelativeLayout {
 	public void setView(View leftView, View rightView, View centerView,
 			int leftViewWidth, int rightViewWidth) {
 		RelativeLayout.LayoutParams leftParams = new LayoutParams(
-				(int) DenstyUtil.convertDpToPixel(leftViewWidth, mContext),
+				(int) convertDpToPixel(leftViewWidth, mContext),
 				LayoutParams.MATCH_PARENT);
 		leftParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 		addView(leftView, leftParams);
 
 		RelativeLayout.LayoutParams rightParams = new LayoutParams(
-				(int) DenstyUtil.convertDpToPixel(rightViewWidth, mContext),
+				(int) convertDpToPixel(rightViewWidth, mContext),
 				LayoutParams.MATCH_PARENT);
 		rightParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		addView(rightView, rightParams);
@@ -163,8 +158,8 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public void setWhichSideCanShow(boolean isLeftCanShow,
 			boolean isRightCanShow) {
-		isLeftViewCanShow = isLeftCanShow;
-		isRightViewCanShow = isRightCanShow;
+		mCanLeftViewShow = isLeftCanShow;
+		mCanRightViewShow = isRightCanShow;
 	}
 
 	@Override
@@ -186,10 +181,10 @@ public class SlidingMenu extends RelativeLayout {
 			mLastPostionX = x;
 			mLastPostionY = y;
 
-			if (isLeftViewCanShow) {
+			if (mCanLeftViewShow) {
 				mLeftView.setVisibility(View.VISIBLE);
 				mRightView.setVisibility(View.GONE);
-			} else if (isRightViewCanShow) {
+			} else if (mCanRightViewShow) {
 				mLeftView.setVisibility(View.GONE);
 				mRightView.setVisibility(View.VISIBLE);
 			}
@@ -199,13 +194,13 @@ public class SlidingMenu extends RelativeLayout {
 			// but make left view invisible.
 			if (isLeftViewShowing()) {
 				if (x > mLeftViewWidth) {
-					isClick = true;
+					mClicked = true;
 					return true;
 				}
 			}
 			if (isRightViewShowing()) {
 				if (x < (mWindowWidth - mRightViewWidth)) {
-					isClick = true;
+					mClicked = true;
 					return true;
 				}
 			}
@@ -220,7 +215,7 @@ public class SlidingMenu extends RelativeLayout {
 				break;
 			}
 
-			if (isLeftViewCanShow) {
+			if (mCanLeftViewShow) {
 				// scroll to right or is in scrolling to right.
 				if (distance > mTouchSlop || mCenterView.getScrollX() < 0) {
 					mLastPostionX = x;
@@ -228,7 +223,7 @@ public class SlidingMenu extends RelativeLayout {
 				}
 			}
 
-			if (isRightViewCanShow) {
+			if (mCanRightViewShow) {
 
 				if (distance < -mTouchSlop || mCenterView.getScrollX() > 0) {
 					mLastPostionX = x;
@@ -274,7 +269,7 @@ public class SlidingMenu extends RelativeLayout {
 			mLastPostionX = x;
 			// Scroll to right. The distance is negative and less than the width
 			// of left view.
-			if (isLeftViewCanShow) {
+			if (mCanLeftViewShow) {
 				if (targetPositon > 0) {
 					targetPositon = 0;
 				}
@@ -284,7 +279,7 @@ public class SlidingMenu extends RelativeLayout {
 				}
 			}
 
-			if (isRightViewCanShow) {
+			if (mCanRightViewShow) {
 				if (targetPositon < 0) {
 					targetPositon = 0;
 				}
@@ -297,14 +292,14 @@ public class SlidingMenu extends RelativeLayout {
 			// If distance is 0, it is static, On some pad will occur the
 			// condition when the distance is 0 but come here.
 			if (distance != 0) {
-				isClick = false;
+				mClicked = false;
 				mCenterView.scrollTo(targetPositon, 0);
 			}
 
 			break;
 		case MotionEvent.ACTION_UP:
-			if (isClick) {
-				isClick = false;
+			if (mClicked) {
+				mClicked = false;
 
 				// When we click the visible part of the middle view it may
 				// close the left view, so need reset the state here.
@@ -319,7 +314,7 @@ public class SlidingMenu extends RelativeLayout {
 			}
 
 			int dx = 0;
-			if (isLeftViewCanShow) {
+			if (mCanLeftViewShow) {
 				if (xVelocity > minVelocity) {
 					// To right.
 					dx = -mLeftViewWidth - mCenterView.getScrollX();
@@ -341,7 +336,7 @@ public class SlidingMenu extends RelativeLayout {
 					resumeLeftViewClickState();
 				}
 
-			} else if (isRightViewCanShow) {
+			} else if (mCanRightViewShow) {
 				if (xVelocity > minVelocity) {
 					// Scroll to the original position.
 					dx = -mCenterView.getScrollX();
@@ -379,7 +374,7 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	private void smoothScrollTo(int distance) {
 		mScroller.startScroll(mCenterView.getScrollX(), 0, distance, 0,
-				mDuration);
+				sDuration);
 		invalidate();
 	}
 
@@ -395,7 +390,6 @@ public class SlidingMenu extends RelativeLayout {
 			mCenterView.scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
 			postInvalidate();
 		}
-
 	}
 
 	/**
@@ -445,12 +439,12 @@ public class SlidingMenu extends RelativeLayout {
 		// Avoid we click the show left view button, but the left view is
 		// invisible now.
 		if (isCenterViewFullShowing()) {
-			isLeftViewCanShowBeforeToogle = isLeftViewCanShow;
-			isRightViewCanShowBeforeToogle = isRightViewCanShow;
+			mCanLeftViewShowBeforeToogle = mCanLeftViewShow;
+			mCanRightViewShowBeforeToogle = mCanRightViewShow;
 			setWhichSideCanShow(true, false);
 			mLeftView.setVisibility(View.VISIBLE);
 			mRightView.setVisibility(View.GONE);
-			isLeftViewToogleClick = true;
+			mLeftViewToogleClicked = true;
 		} else if (isLeftViewShowing()) {
 			resumeLeftViewClickState();
 		}
@@ -460,7 +454,6 @@ public class SlidingMenu extends RelativeLayout {
 		} else {
 			smoothScrollTo(-mLeftViewWidth);
 		}
-
 	}
 
 	/**
@@ -468,13 +461,13 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public void showRightViewToogle() {
 		if (isCenterViewFullShowing()) {
-			isLeftViewCanShowBeforeToogle = isLeftViewCanShow;
-			isRightViewCanShowBeforeToogle = isRightViewCanShow;
+			mCanLeftViewShowBeforeToogle = mCanLeftViewShow;
+			mCanRightViewShowBeforeToogle = mCanRightViewShow;
 
 			setWhichSideCanShow(false, true);
 			mLeftView.setVisibility(View.GONE);
 			mRightView.setVisibility(View.VISIBLE);
-			isRightViewToogleClick = true;
+			mRightViewToogleClicked = true;
 		} else if (isRightViewShowing()) {
 			resumeRightViewClickState();
 		}
@@ -490,19 +483,62 @@ public class SlidingMenu extends RelativeLayout {
 	 * Resume the state to before we click the show left view button.
 	 */
 	private void resumeLeftViewClickState() {
-		if (isLeftViewToogleClick) {
-			isLeftViewToogleClick = false;
-			setWhichSideCanShow(isLeftViewCanShowBeforeToogle,
-					isRightViewCanShowBeforeToogle);
+		if (mLeftViewToogleClicked) {
+			mLeftViewToogleClicked = false;
+			setWhichSideCanShow(mCanLeftViewShowBeforeToogle,
+					mCanRightViewShowBeforeToogle);
 		}
 	}
 
 	private void resumeRightViewClickState() {
-		if (isRightViewToogleClick) {
-			setWhichSideCanShow(isLeftViewCanShowBeforeToogle,
-					isRightViewCanShowBeforeToogle);
-			isRightViewToogleClick = false;
+		if (mRightViewToogleClicked) {
+			setWhichSideCanShow(mCanLeftViewShowBeforeToogle,
+					mCanRightViewShowBeforeToogle);
+			mRightViewToogleClicked = false;
 		}
 	}
+	
+	/**
+	 * This method converts dp unit to equivalent pixels, depending on device
+	 * density.
+	 * 
+	 * @param dp
+	 *            A value in dp (density independent pixels) unit. Which we need
+	 *            to convert into pixels
+	 * @param context
+	 *            Context to get resources and device specific display metrics
+	 * @return A float value to represent px equivalent to dp depending on
+	 *         device density
+	 */
+	public static float convertDpToPixel(float dp, Context context) {
+		Resources resources = context.getResources();
+		DisplayMetrics metrics = resources.getDisplayMetrics();
+		float px = dp * (metrics.densityDpi / 160f);
+		return px;
+	}
 
+	/**
+	 * This method converts device specific pixels to density independent
+	 * pixels.
+	 * 
+	 * @param px
+	 *            A value in px (pixels) unit. Which we need to convert into db
+	 * @param context
+	 *            Context to get resources and device specific display metrics
+	 * @return A float value to represent dp equivalent to px value
+	 */
+	public static float convertPixelsToDp(float px, Context context) {
+		Resources resources = context.getResources();
+		DisplayMetrics metrics = resources.getDisplayMetrics();
+		float dp = px / (metrics.densityDpi / 160f);
+		return dp;
+	}
+	
+	private int getWindowWidth(Context context) {
+		WindowManager manager = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		manager.getDefaultDisplay().getMetrics(displayMetrics);
+		return displayMetrics.widthPixels;
+	}
 }

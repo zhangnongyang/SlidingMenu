@@ -1,15 +1,15 @@
-package com.charon.slidingmenu;
+package com.charon.slidingmenudemo;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-import com.charon.slidingmenu.fragment.CenterFragment;
-import com.charon.slidingmenu.fragment.CenterFragment.OnViewPagerChangeListener;
-import com.charon.slidingmenu.fragment.LeftFragment;
-import com.charon.slidingmenu.fragment.RightFragment;
 import com.charon.slidingmenu.view.SlidingMenu;
+import com.charon.slidingmenudemo.fragment.CenterFragment;
+import com.charon.slidingmenudemo.fragment.CenterFragment.OnViewPagerChangeListener;
+import com.charon.slidingmenudemo.fragment.LeftFragment;
+import com.charon.slidingmenudemo.fragment.RightFragment;
 
 public class MainActivity extends FragmentActivity {
 	private SlidingMenu mSlidingMenu;

@@ -1,4 +1,4 @@
-package com.charon.slidingmenu.fragment;
+package com.charon.slidingmenudemo.fragment;
 
 import java.util.ArrayList;
 
@@ -14,8 +14,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.charon.slidingmenu.MainActivity;
-import com.charon.slidingmenu.R;
+import com.charon.slidingmenudemo.MainActivity;
+import com.charon.slidingmenudemo.R;
 
 public class CenterFragment extends Fragment implements OnClickListener {
 	private ViewPager mViewPager;
