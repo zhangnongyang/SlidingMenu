@@ -108,12 +108,12 @@ public class SlidingMenu extends RelativeLayout {
 	private void init(Context context) {
 		mContext = context;
 		mScroller = new Scroller(context);
-		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		minVelocity = ViewConfiguration.get(context)
 				.getScaledMinimumFlingVelocity();
 		mWindowWidth = getWindowWidth(context);
 	}
-	
+
 	/**
 	 * Set the three view of the SlidingMenu and the width of the left view and
 	 * right view.
@@ -497,7 +497,7 @@ public class SlidingMenu extends RelativeLayout {
 			mRightViewToogleClicked = false;
 		}
 	}
-	
+
 	/**
 	 * This method converts dp unit to equivalent pixels, depending on device
 	 * density.
@@ -533,7 +533,7 @@ public class SlidingMenu extends RelativeLayout {
 		float dp = px / (metrics.densityDpi / 160f);
 		return dp;
 	}
-	
+
 	private int getWindowWidth(Context context) {
 		WindowManager manager = (WindowManager) context
 				.getSystemService(Context.WINDOW_SERVICE);
